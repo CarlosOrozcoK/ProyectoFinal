@@ -17,9 +17,9 @@ router.post(
         validarCampos
     ],
     saveFactura
-)
+);
 
-router.get("/", getFacturas)
+router.get("/", getFacturas);
 
 router.get(
     "/findFactura/:id",
@@ -31,7 +31,7 @@ router.get(
         validarCampos
     ],
     getFacturaById
-)
+);
 
 router.put(
     "/updateFactura/:id",
@@ -43,7 +43,7 @@ router.put(
         validarCampos
     ],
     updateFactura
-)
+);
 
 router.put(
     "/updateEstadoFactura/:id",
@@ -55,6 +55,6 @@ router.put(
         validarCampos
     ],
     updateEstadoFactura
-)
+);
 
 export default router;

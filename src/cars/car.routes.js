@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { añadirProductoCarro, getCar, removerProductoCarro, pagarCarro, history } from "./car.controller.js";
+import { agregarProductoAlCarrito, obtenerCarrito, eliminarProductoDelCarrito, procesarPago, obtenerHistorial } from "./car.controller.js";
 import { validarCampos } from "../middlewares/validar-campos.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
 import { tieneRole } from "../middlewares/validar-roles.js";
@@ -8,40 +8,40 @@ import { tieneRole } from "../middlewares/validar-roles.js";
 const router = Router();
 
 router.post(
-    "/car",
+    "/carrito",
     [
         validarJWT,
         tieneRole("CLIENT_ROLE"),
-        check("productId", "Product ID is invalid!").isMongoId(),
-        check("quantity", "Quantity must be a number").isInt({ gt: 0 }),
+        check("productId", "¡El ID del producto no es válido!").isMongoId(),
+        check("quantity", "¡La cantidad debe ser un número mayor que 0!").isInt({ gt: 0 }),
         validarCampos
     ],
-    añadirProductoCarro
+    agregarProductoAlCarrito
 );
 
-router.get("/", validarJWT, getCar);
+router.get("/", validarJWT, obtenerCarrito);
 
 router.delete(
     "/:productId",
     [
         validarJWT,
         tieneRole("CLIENT_ROLE"),
-        check("productId", "Product ID is invalid!").isMongoId(),
+        check("productId", "¡El ID del producto no es válido!").isMongoId(),
         validarCampos
     ],
-    removerProductoCarro
+    eliminarProductoDelCarrito
 );
 
 router.post(
-    "/pagarCarro",
+    "/pagar",
     [
         validarJWT,
         tieneRole("CLIENT_ROLE"),
         validarCampos
     ],
-    pagarCarro
+    procesarPago
 );
 
-router.get("/history", validarJWT, history);
+router.get("/historial", validarJWT, obtenerHistorial);
 
 export default router;

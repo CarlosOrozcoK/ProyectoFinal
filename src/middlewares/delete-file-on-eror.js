@@ -1,13 +1,13 @@
-import fs from 'fs/promises';
+import { unlink } from 'fs/promises';
 import { join } from 'path';
 
-export const deleteFileOnError = async (err, req, res) => {
-    if (req.file && req.filePath) {
+export const deleteFileOnError = async (err, req, res, next) => { 
+    if (req.filePath && req.filename) {
         const filePath = join(req.filePath, req.filename);
         try {
-            await fs.unlink(filePath);
+            await unlink(filePath);
         } catch (unlinkErr) {
-            console.error('Error deleting file: ', unlinkErr)
+            console.error('Error deleting file: ', unlinkErr);
         }
     }
 
@@ -17,8 +17,9 @@ export const deleteFileOnError = async (err, req, res) => {
             errors: err.errors
         });
     }
+
     return res.status(500).json({
         success: false,
         message: err.message
-    })
-}
+    });
+};

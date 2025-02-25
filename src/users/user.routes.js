@@ -11,63 +11,64 @@ const router = Router();
 router.get("/", getUsers);
 
 router.get(
-    "/findUser/:id",
+    "/find/:id",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("id", "Invalid ID format!").isMongoId(),
         check("id").custom(existeUsuarioById),
         validarCampos
     ],
     getUserById
-)
+);
 
 router.put(
-    "/:id",
+    "/edit/:id",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE", "CLIENT_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("id", "Invalid ID format!").isMongoId(),
         check("id").custom(existeUsuarioById),
         validarCampos
     ],
     updateUser
-)
+);
 
 router.put(
-    "/:id",
+    "/password/:id",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("id", "Invalid ID format!").isMongoId(),
         check("id").custom(existeUsuarioById),
+        check("password", "Password is required!").notEmpty(),
         validarCampos
     ],
     updatePassword
-)
+);
 
 router.put(
-    "/:id",
+    "/status/:id",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("id", "Invalid ID format!").isMongoId(),
         check("id").custom(existeUsuarioById),
         validarCampos
     ],
     updateStatus
-)
+);
 
 router.delete(
-    "/:id",
+    "/remove/:id",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE", "CLIENT_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("id", "Invalid ID format!").isMongoId(),
         check("id").custom(existeUsuarioById),
         validarCampos
     ],
     deleteUser
-)
+);
 
 export default router;

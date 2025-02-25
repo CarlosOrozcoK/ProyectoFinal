@@ -1,5 +1,6 @@
 'use strict';
 
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -12,6 +13,8 @@ import productRoutes from '../src/products/product.routes.js';
 import categoryRoutes from '../src/categories/category.routes.js';
 import facturaRoutes from '../src/facturas/factura.routes.js';
 import carRoutes from '../src/cars/car.routes.js';
+
+dotenv.config();
 
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
@@ -43,7 +46,7 @@ const conectarDB = async () => {
 
 export const initServer = async () => {
     const app = express();
-    const port = process.env.PORT || 3002;
+    const port = process.env.PORT || 3000;
 
     try {
         middlewares(app);

@@ -1,22 +1,22 @@
 import { Schema, model } from "mongoose";
 
-const CategorySchema = Schema({
+const CategorySchema = new Schema({
     name: {
         type: String,
-        required: [true, "The name is required!"],
-        maxLength: 25,
+        required: [true, "¡El nombre es obligatorio!"],
+        maxlength: 25,
     },
-
+    
     description: {
         type: String,
-        required: [true, "Description is required!"],
-        maxLength: [500, "500 characters maximum!"],
+        required: [true, "¡La descripción es obligatoria!"],
+        maxlength: 500,
     },
 
     productos: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Product'
+            ref: "Product"
         }
     ],
 
@@ -24,10 +24,9 @@ const CategorySchema = Schema({
         type: Boolean,
         default: true
     }
-},
-    {
-        timestamps: true,
-        versionKey: false
-    });
+}, {
+    timestamps: true,
+    versionKey: false
+});
 
-export default model('Category', CategorySchema);
+export default model("Category", CategorySchema);

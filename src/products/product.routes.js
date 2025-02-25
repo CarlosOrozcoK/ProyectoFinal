@@ -17,7 +17,7 @@ router.post(
         validarCampos
     ],
     saveProduct
-)
+);
 
 router.get("/", getProducts);
 
@@ -31,7 +31,7 @@ router.get(
         validarCampos
     ],
     getProductById
-)
+);
 
 router.get(
     "/findProductByName/:name",
@@ -55,7 +55,7 @@ router.put(
         validarCampos
     ],
     updateProduct
-)
+);
 
 router.delete(
     "/sell/:id",
@@ -67,7 +67,7 @@ router.delete(
         validarCampos
     ],
     deleteProduct
-)
+);
 
 router.delete(
     "/delete/:id",
@@ -79,6 +79,6 @@ router.delete(
         validarCampos
     ],
     deleteProduct
-)
+);
 
 export default router;

@@ -1,253 +1,104 @@
-import mongoose from "mongoose";
 import Factura from "./factura.model.js";
 import Product from "../products/product.model.js";
 
 export const saveFactura = async (req, res) => {
     try {
-        const data = req.body;
+        const { user, products } = req.body;
 
-        let productDetails = [];
-        let total = 0;
-
-        if (!data.user || !data.products || !Array.isArray(data.products) || data.products.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "User and products are required!",
-            });
+        if (!user || !Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({ success: false, message: "Usuario y productos son requeridos!" });
         }
 
-        for (let item of data.products) {
+        let total = 0;
+        const productDetails = await Promise.all(products.map(async item => {
             const product = await Product.findById(item.product);
-
-            if (!product) {
-                return res.status(404).json({
-                    success: false,
-                    message: `Product with ID ${item.product} not found!`,
-                });
-            }
-
-            if (product.stock < item.quantity) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Insufficient stock for product: ${product.name}`,
-                });
-            }
+            if (!product) throw new Error(`Producto con ID ${item.product} no encontrado!`);
+            if (product.stock < item.quantity) throw new Error(`Stock insuficiente para el producto: ${product.name}`);
 
             product.stock -= item.quantity;
             product.sold += item.quantity;
             product.outOfStock = product.stock === 0;
             await product.save();
 
-            productDetails.push({
-                product: product._id,
-                quantity: item.quantity,
-                price: product.price,
-            });
-
             total += product.price * item.quantity;
-        }
+            return { product: product._id, quantity: item.quantity, price: product.price };
+        }));
 
-        const factura = new Factura({
-            user: data.user,
-            products: productDetails,
-            total,
-            status: "Pending",
-        });
-
-        await factura.save();
-
-        res.status(200).json({
-            success: true,
-            message: "Factura created successfully!",
-            factura,
-        });
+        const factura = await Factura.create({ user, products: productDetails, total, status: "Pendiente" });
+        res.status(201).json({ success: true, message: "Factura creada con éxito!", factura });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error saving factura!",
-            error: error.message,
-        });
+        res.status(500).json({ success: false, message: "Error al guardar factura!", error: error.message });
     }
 };
 
 export const getFacturas = async (req, res) => {
-    const { limite = 10, desde = 0 } = req.query;
-    const query = { status: { $ne: "Cancelled" } };
-
     try {
-        const facturas = await Factura.find(query)
-            .skip(Number(desde))
-            .limit(Number(limite))
+        const { limite = 10, desde = 0 } = req.query;
+        const facturas = await Factura.find({ status: { $ne: "Cancelado" } })
+            .skip(Number(desde)).limit(Number(limite))
             .populate("user", "name")
             .populate("products.product", "name price");
 
-        const total = await Factura.countDocuments(query);
-
-        const formattedFacturas = facturas.map(factura => ({
-            _id: factura._id,
-            user: factura.user ? factura.user.name : "User not found!",
-            products: factura.products.map(item => ({
-                name: item.product ? item.product.name : "Product not found!",
-                price: item.product ? item.product.price : 0,
-                quantity: item.quantity
-            })),
-            total: factura.total,
-            status: factura.status,
-            createdAt: factura.createdAt,
-            updatedAt: factura.updatedAt
-        }));
-
-        res.status(200).json({
-            success: true,
-            total,
-            facturas: formattedFacturas
-        });
-
+        res.status(200).json({ success: true, total: facturas.length, facturas });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error getting facturas!",
-            error: error.message
-        });
+        res.status(500).json({ success: false, message: "Error al obtener facturas!", error: error.message });
     }
 };
 
 export const getFacturaById = async (req, res) => {
-    const { id } = req.params;
-
     try {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid ID format!",
-            });
-        }
-
-        const factura = await Factura.findById(id)
+        const factura = await Factura.findById(req.params.id)
             .populate("user", "name")
             .populate("products.product", "name price");
 
-        if (!factura) {
-            return res.status(404).json({
-                success: false,
-                message: "Factura not found!",
-            });
-        }
-
-        const facturaData = {
-            _id: factura._id,
-            user: factura.user ? factura.user.name : "User not found!",
-            products: factura.products.map(item => ({
-                name: item.product ? item.product.name : "Product not found!",
-                price: item.product ? item.product.price : 0,
-                quantity: item.quantity,
-            })),
-            total: factura.total,
-            status: factura.status,
-            createdAt: factura.createdAt,
-            updatedAt: factura.updatedAt,
-        };
-
-        res.status(200).json({
-            success: true,
-            factura: facturaData,
-        });
+        if (!factura) return res.status(404).json({ success: false, message: "Factura no encontrada!" });
+        res.status(200).json({ success: true, factura });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error searching factura!",
-            error: error.message,
-        });
+        res.status(500).json({ success: false, message: "Error al buscar factura!", error: error.message });
     }
 };
 
 export const updateFactura = async (req, res) => {
     try {
         const { id } = req.params;
-        const data = req.body;
+        const { products, status } = req.body;
 
-        const existingFactura = await Factura.findById(id);
-        if (!existingFactura) {
-            return res.status(404).json({
-                success: false,
-                message: 'Factura not found!'
-            });
-        }
+        const factura = await Factura.findById(id);
+        if (!factura) return res.status(404).json({ success: false, message: "Factura no encontrada!" });
 
-        let newProductDetails = [];
-        let total = 0;
+        if (products) {
+            await Promise.all(factura.products.map(async item => {
+                const product = await Product.findById(item.product);
+                if (product) {
+                    product.stock += item.quantity;
+                    product.sold -= item.quantity;
+                    product.outOfStock = product.stock === 0;
+                    await product.save();
+                }
+            }));
 
-        for (let item of existingFactura.products) {
-            const product = await Product.findById(item.product);
-            if (product) {
-                product.stock += item.quantity;
-                product.sold -= item.quantity;
+            let total = 0;
+            factura.products = await Promise.all(products.map(async item => {
+                const product = await Product.findById(item.product);
+                if (!product) throw new Error(`Producto con ID ${item.product} no encontrado!`);
+                if (product.stock < item.quantity) throw new Error(`Stock insuficiente para ${product.name}`);
+                
+                product.stock -= item.quantity;
+                product.sold += item.quantity;
                 product.outOfStock = product.stock === 0;
                 await product.save();
-            }
+
+                total += product.price * item.quantity;
+                return { product: product._id, quantity: item.quantity, price: product.price };
+            }));
+            factura.total = total;
         }
 
-        for (let item of data.products) {
-            const product = await Product.findById(item.product);
-
-            if (!product) {
-                return res.status(404).json({
-                    success: false,
-                    message: `Product with ID ${item.product} not found!`
-                });
-            }
-
-            if (product.stock < item.quantity) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Insufficient stock for product: ${product.name}`
-                });
-            }
-
-            product.stock -= item.quantity;
-            product.sold += item.quantity;
-            product.outOfStock = product.stock === 0;
-            await product.save();
-
-            newProductDetails.push({
-                product: product._id,
-                quantity: item.quantity,
-                price: product.price
-            });
-
-            total += product.price * item.quantity;
-        }
-
-        existingFactura.products = newProductDetails;
-        existingFactura.total = total;
-        existingFactura.status = data.status || existingFactura.status;
-
-        await existingFactura.save();
-
-        const updatedFactura = await Factura.findById(id)
-            .populate('products.product', 'name');
-
-        const formattedFactura = {
-            ...updatedFactura.toObject(),
-            products: updatedFactura.products.map(item => ({
-                name: item.product ? item.product.name : "Product not found!",
-                price: item.product ? item.product.price : 0,
-                quantity: item.quantity
-            }))
-        };
-
-        res.status(200).json({
-            success: true,
-            message: 'Factura updated successfully!',
-            factura: formattedFactura
-        });
-
+        if (status) factura.status = status;
+        await factura.save();
+        res.status(200).json({ success: true, message: "Factura actualizada!", factura });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error updating factura!',
-            error: error.message
-        });
+        res.status(500).json({ success: false, message: "Error al actualizar factura!", error: error.message });
     }
 };
 
@@ -255,60 +106,20 @@ export const updateEstadoFactura = async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
+        const validStatuses = ["Pendiente", "Pagado", "Cancelado"];
 
-        const validStatuses = ['Pending', 'Paid', 'Cancelled'];
-        if (!status || !validStatuses.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: `Invalid status value. Allowed values are: ${validStatuses.join(', ')}`
-            });
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ success: false, message: `Estado inválido! Valores permitidos: ${validStatuses.join(', ')}` });
         }
 
         const factura = await Factura.findById(id);
-        if (!factura) {
-            return res.status(404).json({
-                success: false,
-                message: 'Factura not found!'
-            });
-        }
-
-        if (factura.status === status) {
-            return res.status(200).json({
-                success: true,
-                message: 'No changes made. The invoice is already in the requested status.',
-                factura
-            });
-        }
+        if (!factura) return res.status(404).json({ success: false, message: "Factura no encontrada!" });
 
         factura.status = status;
-
         await factura.save();
 
-        const updatedFactura = await Factura.findById(id)
-            .populate('user', 'name')
-            .populate('products.product', 'name price');
-
-        const formattedFactura = {
-            ...updatedFactura.toObject(),
-            user: updatedFactura.user ? updatedFactura.user.name : "User not found!",
-            products: updatedFactura.products.map(item => ({
-                name: item.product ? item.product.name : "Product not found!",
-                price: item.product ? item.product.price : 0,
-                quantity: item.quantity
-            }))
-        };
-
-        res.status(200).json({
-            success: true,
-            message: 'Factura status updated successfully!',
-            factura: formattedFactura
-        });
-
+        res.status(200).json({ success: true, message: "Estado actualizado!", factura });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error updating factura status!',
-            error: error.message
-        });
+        res.status(500).json({ success: false, message: "Error al actualizar estado de factura!", error: error.message });
     }
 };

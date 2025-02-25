@@ -13,48 +13,51 @@ router.post(
     [
         validarJWT,
         tieneRole("ADMIN_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("name", "¡El nombre es obligatorio!").notEmpty(),
+        check("description", "¡La descripción es obligatoria!").notEmpty(),
         validarCampos
     ],
     guardarCategoria
-)
+);
 
-router.get("/", getCategories)
+router.get("/", getCategories);
 
 router.get(
     "/findCategory/:id",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE", "CLIENT_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("id", "¡ID inválido!").isMongoId(),
         check("id").custom(existeCategoryById),
         validarCampos
     ],
     getCategoryById
-)
+);
 
 router.put(
     "/:id",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("id", "¡ID inválido!").isMongoId(),
         check("id").custom(existeCategoryById),
+        check("name", "¡El nombre es obligatorio!").optional().notEmpty(),
+        check("description", "¡La descripción es obligatoria!").optional().notEmpty(),
         validarCampos
     ],
     actualizarCategoria
-)
+);
 
 router.delete(
     "/:id",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE"),
-        check("id", "id invalid!").isMongoId(),
+        check("id", "¡ID inválido!").isMongoId(),
         check("id").custom(existeCategoryById),
         validarCampos
     ],
     eliminarCategoria
-)
+);
 
 export default router;

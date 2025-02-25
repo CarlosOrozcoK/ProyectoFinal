@@ -1,5 +1,5 @@
 import { response, request } from "express";
-import { hash, verify } from "argon2";
+import { hash } from "argon2";
 import User from "./user.model.js";
 
 export const getUsers = async (req = request, res = response) => {
@@ -12,152 +12,137 @@ export const getUsers = async (req = request, res = response) => {
             User.find(query)
                 .skip(Number(desde))
                 .limit(Number(limite))
-        ])
+        ]);
 
         res.status(200).json({
             success: true,
             total,
             users
-        })
-
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
-            msg: 'Error getting users!',
+            msg: "Error getting users!",
             error
-        })
+        });
     }
-}
+};
 
 export const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
-
         const user = await User.findById(id);
 
         if (!user) {
             return res.status(404).json({
                 success: false,
-                msg: 'Usuario not found!'
-            })
+                msg: "User not found!"
+            });
         }
 
         res.status(200).json({
             success: true,
             user
-        })
-
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
-            msg: 'Error getting user!',
+            msg: "Error getting user!",
             error
-        })
+        });
     }
-}
+};
 
 export const updateUser = async (req, res = response) => {
     try {
-
         const { id } = req.params;
-        const { _id, password, email, ...data } = req.body;
+        const { password, email, ...data } = req.body;
 
         if (password) {
-            data.password = await hash(password)
+            data.password = await hash(password);
         }
 
         const user = await User.findByIdAndUpdate(id, data, { new: true });
 
         res.status(200).json({
             success: true,
-            msg: 'User update!',
+            msg: "User updated!",
             user
-        })
-
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
-            msg: 'Error update!',
+            msg: "Error updating user!",
             error
-        })
+        });
     }
-}
+};
 
 export const updatePassword = async (req, res = response) => {
     try {
-
         const { id } = req.params;
         const { password } = req.body;
 
-        if (password) {
-            data.password = await hash(password)
+        if (!password) {
+            return res.status(400).json({
+                success: false,
+                msg: "Password is required!"
+            });
         }
 
-        const user = await User.findByIdAndUpdate(id, { new: true });
+        const hashedPassword = await hash(password);
+        const user = await User.findByIdAndUpdate(id, { password: hashedPassword }, { new: true });
 
         res.status(200).json({
             success: true,
-            msg: 'Password update!',
+            msg: "Password updated!",
             user
-        })
-
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
-            msg: 'Error update!',
+            msg: "Error updating password!",
             error
-        })
+        });
     }
-}
+};
 
 export const deleteUser = async (req, res) => {
     try {
-
         const { id } = req.params;
-
         const user = await User.findByIdAndUpdate(id, { estado: false }, { new: true });
-
-        const authenticatedUser = req.user;
 
         res.status(200).json({
             success: true,
-            msg: 'Deactivate user!',
-            user,
-            authenticatedUser
-        })
-
+            msg: "User deactivated!",
+            user
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
-            msg: 'Deactivate error!',
+            msg: "Error deactivating user!",
             error
-        })
+        });
     }
-}
+};
 
 export const updateStatus = async (req, res = response) => {
     try {
-
         const { id } = req.params;
         const { estado } = req.body;
 
-        if (password) {
-            data.estado = await hash(estado)
-        }
-
-        const user = await User.findByIdAndUpdate(id, { new: true });
+        const user = await User.findByIdAndUpdate(id, { estado }, { new: true });
 
         res.status(200).json({
             success: true,
-            msg: 'Status update!',
+            msg: "Status updated!",
             user
-        })
-
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
-            msg: 'Error update!',
+            msg: "Error updating status!",
             error
-        })
+        });
     }
-}
+};

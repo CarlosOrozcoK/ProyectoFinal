@@ -4,13 +4,13 @@ const UserSchema = Schema({
     name: {
         type: String,
         required: [true, "The name is required!"],
-        maxLenght: 25,
+        maxLength: 25,
     },
 
     surname: {
         type: String,
-        required: [true, "The name is required!"],
-        maxLenght: [25, "25 characters maximun!"],
+        required: [true, "The surname is required!"],
+        maxLength: [25, "25 characters maximum!"],
     },
 
     username: {
@@ -27,7 +27,7 @@ const UserSchema = Schema({
     password: {
         type: String,
         required: [true, "The password is required!"],
-        minLenght: [8, "8 minumun characters!"],
+        minLength: [8, "8 minimum characters!"],
     },
 
     profile: {
@@ -36,8 +36,8 @@ const UserSchema = Schema({
 
     phone: {
         type: String,
-        minLenght: 8,
-        maxLenght: 8,
+        minLength: 8,
+        maxLength: 8,
         required: [true, "The phone is required!"],
     },
 
@@ -58,12 +58,12 @@ const UserSchema = Schema({
 },
     {
         timestamps: true,
-        versionkey: false
+        versionKey: false
     }
 );
 
 UserSchema.methods.toJSON = function () {
-    const { _v, password, _id, ...usuario } = this.toObject();
+    const { __v, password, _id, ...usuario } = this.toObject();
     usuario.uid = _id;
     return usuario;
 }

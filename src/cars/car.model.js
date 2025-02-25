@@ -1,28 +1,26 @@
 import { Schema, model } from "mongoose";
 
-const CarSchema = new Schema({
-    user: {
+const CarritoSchema = new Schema({
+    usuario: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
-
-    products: [
+    productos: [
         {
-            product: {
+            producto: {
                 type: Schema.Types.ObjectId,
                 ref: "Product",
                 required: true
             },
-            quantity: {
+            cantidad: {
                 type: Number,
                 default: 1,
                 min: 1
             }
         }
     ],
-
-    status: {
+    activo: {
         type: Boolean,
         default: true
     }
@@ -31,4 +29,4 @@ const CarSchema = new Schema({
     versionKey: false
 });
 
-export default model('Car', CarSchema);
+export default model('Carrito', CarritoSchema);
