@@ -17,7 +17,7 @@ export const login = async (req, res) => {
         }
 
         if (!user.estado) {
-            return res.status(400).json({ msg: 'el Usuario esta inactivo!' });
+            return res.status(400).json({ msg: 'El usuario está inactivo!' });
         }
 
         const isPasswordValid = await verifyPassword(user.password, password);
@@ -35,7 +35,7 @@ export const login = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error(error);
+        console.error(' Error en login:', error);
         return res.status(500).json({
             message: 'Internal server error!',
             error: error.message

@@ -28,31 +28,6 @@ export const getUsers = async (req = request, res = response) => {
     }
 };
 
-export const getUserById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const user = await User.findById(id);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                msg: "User not found!"
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            user
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            msg: "Error getting user!",
-            error
-        });
-    }
-};
-
 export const updateUser = async (req, res = response) => {
     try {
         const { id } = req.params;

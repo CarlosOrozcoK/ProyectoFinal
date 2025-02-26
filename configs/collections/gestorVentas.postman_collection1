@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "17aec604-9a63-4486-b183-b3ede03379be",
+		"_postman_id": "8f8907b5-1396-4825-a577-a479dc89647b",
 		"name": "gestorVentas",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "41656904"
+		"_exporter_id": "42416343"
 	},
 	"item": [
 		{
@@ -100,41 +100,6 @@
 											"key": "desde",
 											"value": "0"
 										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "getUserById",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:3002/gestorVentas/v1/users/findUser/67b4baf4d075ae5f0ab3d11c",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3002",
-									"path": [
-										"gestorVentas",
-										"v1",
-										"users",
-										"findUser",
-										"67b4baf4d075ae5f0ab3d11c"
 									]
 								}
 							},

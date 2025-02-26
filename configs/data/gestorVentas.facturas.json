@@ -1,0 +1,28 @@
+[{
+  "_id": {
+    "$oid": "67bea841a6b8022232a8cb0d"
+  },
+  "user": {
+    "$oid": "67be880a13ab56582d6ea0ff"
+  },
+  "products": [
+    {
+      "product": {
+        "$oid": "67bea003a6b8022232a8cad9"
+      },
+      "quantity": 10,
+      "price": 5,
+      "_id": {
+        "$oid": "67bea8eba6b8022232a8cb24"
+      }
+    }
+  ],
+  "total": 50,
+  "status": "Pagado",
+  "createdAt": {
+    "$date": "2025-02-26T05:36:01.432Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-26T05:40:02.424Z"
+  }
+}]

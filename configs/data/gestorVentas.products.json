@@ -1,0 +1,38 @@
+[{
+  "_id": {
+    "$oid": "67be9fd5a6b8022232a8cad6"
+  },
+  "object": "Fruta",
+  "name": "Mango",
+  "description": "Fruta que se puede hacer de varias formas.",
+  "price": 8,
+  "stock": 60,
+  "sold": 0,
+  "outOfStock": false,
+  "estado": false,
+  "createdAt": {
+    "$date": "2025-02-26T05:00:05.564Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-26T05:09:59.811Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67bea003a6b8022232a8cad9"
+  },
+  "object": "Fruta",
+  "name": "naranja",
+  "description": "Fruta redonde con mucho jugo",
+  "price": 5,
+  "stock": 89,
+  "sold": 11,
+  "outOfStock": false,
+  "estado": true,
+  "createdAt": {
+    "$date": "2025-02-26T05:00:51.708Z"
+  },
+  "updatedAt": {
+    "$date": "2025-02-26T05:38:51.382Z"
+  }
+}]

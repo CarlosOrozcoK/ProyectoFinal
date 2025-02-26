@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { getUsers, getUserById, updateUser, updatePassword, updateStatus, deleteUser } from "./user.controller.js";
+import { getUsers, updateUser, updatePassword, updateStatus, deleteUser } from "./user.controller.js";
 import { existeUsuarioById } from "../helpers/db-validator.js";
 import { validarCampos } from "../middlewares/validar-campos.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
@@ -9,18 +9,6 @@ import { tieneRole } from "../middlewares/validar-roles.js";
 const router = Router();
 
 router.get("/", getUsers);
-
-router.get(
-    "/find/:id",
-    [
-        validarJWT,
-        tieneRole("ADMIN_ROLE"),
-        check("id", "Invalid ID format!").isMongoId(),
-        check("id").custom(existeUsuarioById),
-        validarCampos
-    ],
-    getUserById
-);
 
 router.put(
     "/edit/:id",
@@ -46,12 +34,11 @@ router.put(
     ],
     updatePassword
 );
-
 router.put(
     "/status/:id",
     [
         validarJWT,
-        tieneRole("ADMIN_ROLE"),
+        tieneRole("ADMIN_ROLE", "CLIENT_ROLE"),
         check("id", "Invalid ID format!").isMongoId(),
         check("id").custom(existeUsuarioById),
         validarCampos
@@ -69,6 +56,6 @@ router.delete(
         validarCampos
     ],
     deleteUser
-);
+); 
 
 export default router;
