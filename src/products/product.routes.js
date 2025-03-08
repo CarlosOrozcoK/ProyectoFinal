@@ -34,7 +34,7 @@ router.get(
 );
 
 router.get(
-    "/findProductByName/:name",
+    "/name/:name",
     [
         validarJWT,
         tieneRole("ADMIN_ROLE", "CLIENT_ROLE"),

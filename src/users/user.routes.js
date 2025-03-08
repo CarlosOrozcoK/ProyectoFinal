@@ -22,30 +22,6 @@ router.put(
     updateUser
 );
 
-router.put(
-    "/password/:id",
-    [
-        validarJWT,
-        tieneRole("ADMIN_ROLE"),
-        check("id", "Invalid ID format!").isMongoId(),
-        check("id").custom(existeUsuarioById),
-        check("password", "Password is required!").notEmpty(),
-        validarCampos
-    ],
-    updatePassword
-);
-router.put(
-    "/status/:id",
-    [
-        validarJWT,
-        tieneRole("ADMIN_ROLE", "CLIENT_ROLE"),
-        check("id", "Invalid ID format!").isMongoId(),
-        check("id").custom(existeUsuarioById),
-        validarCampos
-    ],
-    updateStatus
-);
-
 router.delete(
     "/remove/:id",
     [
