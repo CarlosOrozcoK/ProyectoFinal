@@ -1,60 +1,60 @@
 [{
   "_id": {
-    "$oid": "67be8303f4fbb953ce93d6ed"
+    "$oid": "67cf841d879a27f087c6c2d9"
   },
   "name": "Carlos",
   "surname": "Orozco",
   "username": "orozcoc",
   "email": "carlosorozco@gmail.com",
-  "password": "$argon2id$v=19$m=65536,t=3,p=4$WSjJQdhqHHI9x1hEXhpDvg$xtSTT8lCZYuSqGWKelqOhQsT/KjJy2w4GnokjOWs6Xo",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$Iyp5iEWcqrnXz9ZfFjmS4w$rF7z8KxnNsAdPd0dSmJ/QV78tszPg5L6EyeneUAWMSE",
   "phone": "39679413",
   "role": "ADMIN_ROLE",
   "estado": true,
   "google": false,
   "createdAt": {
-    "$date": "2025-02-26T02:57:07.421Z"
+    "$date": "2025-03-11T00:30:21.568Z"
   },
   "updatedAt": {
-    "$date": "2025-02-26T02:57:07.421Z"
+    "$date": "2025-03-11T00:30:21.568Z"
   }
 },
 {
   "_id": {
-    "$oid": "67be880a13ab56582d6ea0ff"
+    "$oid": "67cf8500879a27f087c6c2dd"
   },
-  "name": "Alejandro",
-  "surname": "Carrillo",
-  "username": "alejandro45",
-  "email": "alejandrocark@gmail.com",
-  "password": "$argon2id$v=19$m=65536,t=3,p=4$MB94XUN1h692ZJTqrxNrOQ$3H19w/BIfRRUlPYAoZegMnCwtPve8ZD53pzBpYEszoM",
-  "phone": "45678901",
-  "role": "CLIENT_ROLE",
-  "estado": false,
-  "google": false,
-  "createdAt": {
-    "$date": "2025-02-26T03:18:34.096Z"
-  },
-  "updatedAt": {
-    "$date": "2025-02-26T04:52:05.780Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "67beabd9a6b8022232a8cb37"
-  },
-  "name": "Juan",
-  "surname": "Mateo",
-  "username": "Juank",
-  "email": "juank@gmail.com",
-  "password": "$argon2id$v=19$m=65536,t=3,p=4$WdRQa7ouC91XKJ/56SMIYA$6pgYJjm1bmjrsqKmX3bzOK/NrqwLSJv6xLg6Px4LMI0",
-  "phone": "56890234",
+  "name": "Robin",
+  "surname": "Ardani",
+  "username": "rardan",
+  "email": "robinar34@gmail.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$4m3WbGjVFlSgGtEOxK2bKg$14i5zPaRqUq0c+SDYXFT52TuBshz8qC/alyAGvoY3JE",
+  "phone": "12345678",
   "role": "CLIENT_ROLE",
   "estado": true,
   "google": false,
   "createdAt": {
-    "$date": "2025-02-26T05:51:21.860Z"
+    "$date": "2025-03-11T00:34:08.763Z"
   },
   "updatedAt": {
-    "$date": "2025-02-26T05:51:21.860Z"
+    "$date": "2025-03-11T00:34:08.763Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cf9de0879a27f087c6c2ec"
+  },
+  "name": "Bryan",
+  "surname": "Gamboa",
+  "username": "igamboa",
+  "email": "igamboa@gmail.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$k1Bf4LQv8FiyolK0WSafXQ$nLFxpE5Rcw+gKfNMLFSQ8ouGwd5NxunviHgb+rFRTm4",
+  "phone": "55678945",
+  "role": "CLIENT_ROLE",
+  "estado": true,
+  "google": false,
+  "createdAt": {
+    "$date": "2025-03-11T02:20:16.775Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-11T02:20:16.775Z"
   }
 }]

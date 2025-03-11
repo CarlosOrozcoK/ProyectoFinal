@@ -1,28 +1,38 @@
 [{
   "_id": {
-    "$oid": "67bea841a6b8022232a8cb0d"
+    "$oid": "67cfc06d9cd8256880d0e37e"
   },
   "user": {
-    "$oid": "67be880a13ab56582d6ea0ff"
+    "$oid": "67cf8500879a27f087c6c2dd"
   },
   "products": [
     {
       "product": {
-        "$oid": "67bea003a6b8022232a8cad9"
+        "$oid": "67cfaa7fb425271b266a44f0"
       },
-      "quantity": 10,
+      "quantity": 1,
+      "price": 10,
+      "_id": {
+        "$oid": "67cfc06d9cd8256880d0e37f"
+      }
+    },
+    {
+      "product": {
+        "$oid": "67cf8843879a27f087c6c2e1"
+      },
+      "quantity": 1,
       "price": 5,
       "_id": {
-        "$oid": "67bea8eba6b8022232a8cb24"
+        "$oid": "67cfc06d9cd8256880d0e380"
       }
     }
   ],
-  "total": 50,
+  "total": 15,
   "status": "Pagado",
   "createdAt": {
-    "$date": "2025-02-26T05:36:01.432Z"
+    "$date": "2025-03-11T04:47:41.570Z"
   },
   "updatedAt": {
-    "$date": "2025-02-26T05:40:02.424Z"
+    "$date": "2025-03-11T04:47:41.570Z"
   }
 }]

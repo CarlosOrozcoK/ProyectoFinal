@@ -6,23 +6,23 @@ export const agregarProductoAlCarrito = async (req, res) => {
     try {
         const { productId, quantity } = req.body;
 
-        // Asegurar que el usuario está en la request
         if (!req.usuario || !req.usuario.id) {
             return res.status(401).json({ success: false, message: "¡Usuario no autenticado!" });
         }
 
         const product = await Product.findById(productId);
-
         if (!product) {
             return res.status(404).json({ success: false, message: "¡Producto no encontrado!" });
         }
 
-        // Verifica si el carrito ya existe
         let carrito = await Car.findOne({ usuario: req.usuario.id });
 
         if (!carrito) {
-            // Si no existe, lo creamos con el usuario autenticado
             carrito = new Car({ usuario: req.usuario.id, products: [] });
+        }
+
+        if (!Array.isArray(carrito.products)) {
+            carrito.products = [];
         }
 
         const indiceProducto = carrito.products.findIndex(item => item.product.toString() === productId);
@@ -36,32 +36,48 @@ export const agregarProductoAlCarrito = async (req, res) => {
         await carrito.save();
         res.status(200).json({ success: true, message: "¡Producto añadido al carrito!", carrito });
     } catch (error) {
-        console.error("Error en agregarProductoAlCarrito:", error);
         res.status(500).json({ success: false, message: "¡Error al añadir el producto al carrito!", error: error.message });
     }
 };
-
 export const obtenerCarrito = async (req, res) => {
     try {
-        const carrito = await Car.findOne({ user: req.usuario.id }).populate("products.product");
+        if (!req.usuario || !req.usuario.id) {
+            return res.status(401).json({ success: false, message: "¡Usuario no autenticado!" });
+        }
 
-        if (!carrito || !Array.isArray(carrito.products)) {
+        const carrito = await Car.findOne({ usuario: req.usuario.id })
+            .populate({
+                path: "productos.producto",
+                select: "name price stock",
+            });
+
+        if (!carrito) {
             return res.status(404).json({ success: false, message: "¡Carrito no encontrado!" });
+        }
+
+        if (!Array.isArray(carrito.productos)) {
+            carrito.productos = [];
         }
 
         res.status(200).json({ success: true, carrito });
     } catch (error) {
+        console.error("Error en obtenerCarrito:", error);
         res.status(500).json({ success: false, message: "¡Error al obtener el carrito!", error: error.message });
     }
 };
 
+
 export const eliminarProductoDelCarrito = async (req, res) => {
     try {
         const { productId } = req.params;
-        let carrito = await Car.findOne({ user: req.usuario.id });
+        let carrito = await Car.findOne({ usuario: req.usuario.id });
 
-        if (!carrito || !Array.isArray(carrito.products)) {
+        if (!carrito) {
             return res.status(404).json({ success: false, message: "¡Carrito no encontrado!" });
+        }
+
+        if (!Array.isArray(carrito.products)) {
+            carrito.products = [];
         }
 
         carrito.products = carrito.products.filter(item => item.product.toString() !== productId);
@@ -75,40 +91,53 @@ export const eliminarProductoDelCarrito = async (req, res) => {
 
 export const procesarPago = async (req, res) => {
     try {
-        let carrito = await Car.findOne({ user: req.usuario.id }).populate("products.product");
+        if (!req.usuario || !req.usuario.id) {
+            return res.status(401).json({ success: false, message: "¡Usuario no autenticado!" });
+        }
 
-        if (!carrito || !Array.isArray(carrito.products) || carrito.products.length === 0) {
+        let carrito = await Car.findOne({ usuario: req.usuario.id })
+            .populate("productos.producto");
+
+        if (!carrito || !Array.isArray(carrito.productos) || carrito.productos.length === 0) {
             return res.status(400).json({ success: false, message: "¡El carrito está vacío!" });
         }
 
         let total = 0;
-        for (let item of carrito.products) {
-            if (item.product.stock < item.quantity) {
-                return res.status(400).json({ success: false, message: `¡No hay suficiente stock para ${item.product.name}!` });
+        for (let item of carrito.productos) {
+            if (item.producto.stock < item.cantidad) {
+                return res.status(400).json({ success: false, message: `¡No hay suficiente stock para ${item.producto.name}!` });
             }
-            total += item.product.price * item.quantity;
+            total += item.producto.price * item.cantidad;
         }
 
         const factura = new Factura({
-            user: req.usuario.id,
-            products: carrito.products.map(item => ({ product: item.product._id, quantity: item.quantity, price: item.product.price })),
+            user: req.usuario.id,  // ✅ Cambiado a 'user' para coincidir con el modelo
+            products: carrito.productos.map(item => ({  // ✅ Cambiado 'productos' a 'products'
+                product: item.producto._id,  // ✅ Cambiado 'producto' a 'product'
+                quantity: item.cantidad,  // ✅ Cambiado 'cantidad' a 'quantity'
+                price: item.producto.price  // ✅ Cambiado 'precio' a 'price'
+            })),
             total,
-            status: 'Pagado'
+            status: 'Pagado'  
         });
 
         await factura.save();
 
-        for (let item of carrito.products) {
-            await Product.findByIdAndUpdate(item.product._id, { $inc: { stock: -item.quantity, sold: item.quantity } });
+        for (let item of carrito.productos) {
+            await Product.findByIdAndUpdate(item.producto._id, { 
+                $inc: { stock: -item.cantidad } 
+            });
         }
 
-        await Car.findOneAndDelete({ user: req.usuario.id });
+        await Car.findOneAndDelete({ usuario: req.usuario.id });
 
         res.status(200).json({ success: true, message: "¡Compra realizada con éxito!", factura });
     } catch (error) {
+        console.error("Error en procesarPago:", error);
         res.status(500).json({ success: false, message: "¡Error durante la compra!", error: error.message });
     }
 };
+
 
 export const obtenerHistorial = async (req, res) => {
     try {
